@@ -22,6 +22,7 @@ namespace WebAPI.Controllers
         public IActionResult GetById(int id)
         {
             return Ok(context.Students.FirstOrDefault(x => x.Id == id));
+            //// return Ok(context.Students.Where(x=>x.Id == id).ToList());
         }
         [HttpPost]
         public IActionResult Add(Student student)
