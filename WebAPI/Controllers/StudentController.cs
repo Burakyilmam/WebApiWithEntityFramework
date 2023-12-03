@@ -16,20 +16,42 @@ namespace WebAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(context.Students.ToList());
+            var students = context.Students.ToList();
+
+            if (students.Count == 0)
+            {
+                return NotFound("Öğrenci Bulunmamaktadır.");
+            }
+            return Ok(students);
         }
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            return Ok(context.Students.FirstOrDefault(x => x.Id == id));
-            //// return Ok(context.Students.Where(x=>x.Id == id).ToList());
+            var student = context.Students.FirstOrDefault(x => x.Id == id);
+
+            if (student == null)
+            {
+                return NotFound($"{id} ID değeri olan değer bulunamadı.");
+            }
+            return Ok(student);
+
+            // return Ok(context.Students.FirstOrDefault(x => x.Id == id));
+            // return Ok(context.Students.Where(x=>x.Id == id).ToList());
         }
         [HttpPost]
         public IActionResult Add(Student student)
         {
+            var existingStudent = context.Students.FirstOrDefault(s => s.Id == student.Id);
+
+            if (existingStudent != null)
+            {
+                return Conflict($"ID değeri {student.Id} olan öğrenci zaten mevcut.");
+            }
+
             context.Students.Add(student);
             context.SaveChanges();
-            return Ok();
+
+            return Ok($"ID değeri {student.Id} olan öğrenci başarıyla eklendi.");
         }
         [HttpDelete]
         public IActionResult Delete(int id)
@@ -37,7 +59,7 @@ namespace WebAPI.Controllers
             var value = context.Students.Find(id);
             context.Remove(value);
             context.SaveChanges();
-            return Ok();
+            return Ok($"ID değeri {value.Id} olan öğrenci başarıyla silindi.");
         }
         [HttpPut]
         public IActionResult Update(int id)
@@ -48,7 +70,7 @@ namespace WebAPI.Controllers
             value.Statu = false;
             context.Update(value);
             context.SaveChanges();
-            return Ok();
+            return Ok($"ID değeri {value.Id} olan öğrenci başarıyla güncellendi.");
         }
     }
 }
