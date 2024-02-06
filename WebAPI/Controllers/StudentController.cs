@@ -27,7 +27,8 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var student = context.Students.FirstOrDefault(x => x.Id == id);
+            //var student = context.Students.FirstOrDefault(x => x.Id == id);
+            var student = context.Students.Find(id);
 
             if (student == null)
             {
@@ -61,13 +62,25 @@ namespace WebAPI.Controllers
             context.SaveChanges();
             return Ok($"ID değeri {value.Id} olan öğrenci başarıyla silindi.");
         }
+        [HttpDelete("DeleteAll")]
+        public IActionResult DeleteAll()
+        {
+            var value = context.Students.ToList();
+            context.RemoveRange(value);
+            context.SaveChanges();
+            return Ok("Öğrencilerin hepsi başarıyla silindi.");
+
+        }
         [HttpPut]
-        public IActionResult Update(int id)
+        public IActionResult Update(string name,string age,bool statu,int id)
         {
             var value = context.Students.Find(id);
-            value.Name = "Ali";
-            value.Age = "20";
-            value.Statu = false;
+            //value.Name = "Ali";
+            //value.Age = "20";
+            //value.Statu = false;
+            value.Name = name;
+            value.Age = age;
+            value.Statu = statu;
             context.Update(value);
             context.SaveChanges();
             return Ok($"ID değeri {value.Id} olan öğrenci başarıyla güncellendi.");
